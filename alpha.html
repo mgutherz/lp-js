@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vanilla</title>
+
+</head>
+
+<body>
+hello, World!
+
+<div id="gameTitle"></div>
+
+
+<div id="opponentTitle"></div>
+<div id="opponentHandView"></div>
+<div id="opponentHandButton"></div>
+
+<div>
+<button onclick="redeal(opponent)"> Redeal</button>
+</div>
+
+<div id="userTitle"></div>
+<div id="userHandView"></div>
+<div id="userHandButton"></div>
+
+<div>
+<button onclick="redeal(user)"> Redeal</button>
+</div>
+
+<script>
+'use strict';
+
+document.getElementById("gameTitle").innerHTML = "L P"; //only first
+
+let message = Math.floor(Math.random()*10);
+
+
+let user = {
+	name: "Matt",
+	hand: [],
+	viewPrefix: "user"
+	};
+
+let opponent = {
+	name: "AI",
+	hand: [],
+	viewPrefix: "opponent"
+	};
+
+redeal(user);
+redeal(opponent);
+
+
+function redeal(player){
+	let hand = new Array();
+
+	let i;
+	for (i=0; i<8; i++){
+		hand[i] = Math.floor(Math.random()*10);
+	}
+	player.hand = hand;
+	document.getElementById(player.viewPrefix+"HandView").innerHTML = player.hand.sort(); //only first
+}
+
+document.getElementById("opponentTitle").innerHTML = opponent.name;
+document.getElementById("userTitle").innerHTML = user.name;
+
+  
+</script>
+</body>
+</html>
