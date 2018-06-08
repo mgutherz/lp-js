@@ -2,54 +2,57 @@
 <html>
 <head>
   <title>Vanilla</title>
-
 </head>
 
 <body>
-hello, World!
-
 <div id="gameTitle"></div>
-
+<br>
 
 <div id="opponentTitle"></div>
 <div id="opponentHandView"></div>
-<div id="opponentHandButton"></div>
 
-<div>
-<button onclick="redeal(opponent)"> Redeal</button>
-</div>
-
+<br>
 <div id="userTitle"></div>
 <div id="userHandView"></div>
-<div id="userHandButton"></div>
 
-<div>
-<button onclick="redeal(user)"> Redeal</button>
-</div>
+<br>
+<div id="statusRow"></div>
+<br>
+
+<div id="inputRow"></div>
+<div id="buttonRow"></div>
+
+<h3> Game Messages </h3>
+<div id="gameMessages"></div>
 
 <script>
 'use strict';
 
-document.getElementById("gameTitle").innerHTML = "L P"; //only first
+let user = new Object();
+let opponent = new Object();
 
-let message = Math.floor(Math.random()*10);
-
-
-let user = {
+user = {
 	name: "Matt",
 	hand: [],
-	viewPrefix: "user"
+	viewPrefix: "user",
+	next: opponent
 	};
 
-let opponent = {
+opponent = {
 	name: "AI",
 	hand: [],
-	viewPrefix: "opponent"
+	viewPrefix: "opponent",
+	next: user
 	};
 
-redeal(user);
-redeal(opponent);
+let highCard = 9;
+let highCount = 0;
+let messages = [];
+messages[messages.length] = 'Game starting';
+let activePlayer = user;
 
+redealAll();
+drawBoard();
 
 function redeal(player){
 	let hand = new Array();
@@ -59,13 +62,64 @@ function redeal(player){
 		hand[i] = Math.floor(Math.random()*10);
 	}
 	player.hand = hand;
-	document.getElementById(player.viewPrefix+"HandView").innerHTML = player.hand.sort(); //only first
+	document.getElementById(player.viewPrefix+"HandView").innerHTML = player.hand.sort();
 }
+
+function redealAll(){
+	highCard = 9;
+	highCount = 0;
+	messages = [];
+	redeal(user);
+	redeal(opponent);
+	drawBoard();
+}
+
+function logMessage(msg){
+	messages[messages.length] = msg + " <p> " ;
+
+}
+
+function doCall(){
+	logMessage( activePlayer.name + " called");
+	drawBoard();
+}
+
+function doBid(){
+	// get input
+	highCount = document.forms["inputRowfrm"]["inputCount"].value;
+	highCard = document.forms["inputRowfrm"]["inputCard"].value;
+	logMessage( activePlayer.name + " bid " + highCount + " / " + highCard);
+	drawBoard();
+}
+
+function drawBoard(){
+document.getElementById("gameTitle").innerHTML = "L P";
 
 document.getElementById("opponentTitle").innerHTML = opponent.name;
 document.getElementById("userTitle").innerHTML = user.name;
 
-  
+document.getElementById("statusRow").innerHTML = 'Current bid: ' + highCount + ' / ' + highCard;
+ 
+//document.getElementById("inputRow").innerHTML = 'Count: ' + highCount + '<p>Card:' + highCard;
+
+document.getElementById("inputRow").innerHTML = " \
+<form id=\"inputRowfrm\"> \
+Count: <input type=\"text\" name=\"inputCount\" value=" + highCount + "><br>\
+Card: <input type=\"text\" name=\"inputCard\" value=" + highCard + "><br>\
+</form>\
+<br>\
+";
+
+
+document.getElementById("buttonRow").innerHTML = " \
+<button onclick=\"doCall()\"> Call</button> \
+<button onclick=\"doBid()\"> Bid</button> \
+<button onclick=\"redealAll()\"> Redeal</button> \
+";
+
+document.getElementById("gameMessages").innerHTML = messages;
+}
+
 </script>
 </body>
 </html>
