@@ -35,15 +35,19 @@ user = {
 	name: "Matt",
 	hand: [],
 	viewPrefix: "user",
-	next: opponent
+	next: opponent,
+	counts: [],
 	};
 
 opponent = {
 	name: "AI",
 	hand: [],
 	viewPrefix: "opponent",
-	next: user
+	next: user,
+	counts: [],
 	};
+
+user.next = opponent;
 
 let highCard = 9;
 let highCount = 0;
@@ -56,13 +60,29 @@ drawBoard();
 
 function redeal(player){
 	let hand = new Array();
+	player.counts = [];
 
 	let i;
 	for (i=0; i<8; i++){
 		hand[i] = Math.floor(Math.random()*10);
 	}
-	player.hand = hand;
-	document.getElementById(player.viewPrefix+"HandView").innerHTML = player.hand.sort();
+	player.hand = hand.sort();
+
+      	for (i = 0; i <= 9; i++) {
+	        player.counts[i] = howMany(player.hand, i);
+	}
+
+	document.getElementById(player.viewPrefix+"HandView").innerHTML = player.hand;
+}
+
+function howMany(hand, card){
+	let count = 0, i;
+	for (i = 0; i <= 9; i++) {
+		if(hand[i] == card){
+			count++;
+		}
+	}	
+	return count;
 }
 
 function redealAll(){
@@ -80,8 +100,20 @@ function logMessage(msg){
 }
 
 function doCall(){
-	logMessage( activePlayer.name + " called");
+	logMessage( activePlayer.name + " called " + highCount + " " + highCard + "'s");
+	let actCount = user.counts[highCard] + opponent.counts[highCard];
+
+	if( actCount < highCount ) {
+		setWinner(activePlayer.name);
+	}else{
+		setWinner(activePlayer.next.name);
+	}
 	drawBoard();
+}
+
+function setWinner(playerName){
+	logMessage(playerName + " Won!");
+
 }
 
 function doBid(){
@@ -89,6 +121,7 @@ function doBid(){
 	highCount = document.forms["inputRowfrm"]["inputCount"].value;
 	highCard = document.forms["inputRowfrm"]["inputCard"].value;
 	logMessage( activePlayer.name + " bid " + highCount + " / " + highCard);
+	activePlayer = activePlayer.next;
 	drawBoard();
 }
 
